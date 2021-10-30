@@ -1,0 +1,25 @@
+# Ignore compiled .pyc files
+*.pyc
+__pycache__
+
+# Ignore installation files
+*.egg-info
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# Virtual environments
+venv
+
+# DS Store
+.DS_Store
+
+# Downloaded and unzipped terrain 50 data
+data/terr50_gagg_gb
+data/terr50_gagg_gb.*
+
+# User login tokens
+data/tokens.txt
+
+# Local results
+results
