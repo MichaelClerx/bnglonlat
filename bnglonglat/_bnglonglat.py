@@ -14,11 +14,6 @@ def _curvature(a, f0, e2, lat):
     return a * f0 * (1 - e2) * (1 - e2 * sin(lat)**2)**(-1.5)
 
 
-    lat0 = 49*pi/180                    #Latitude of true origin (radians)
-    lon0 = -2*pi/180                    #Longtitude of true origin and central meridian (radians)
-    N0, E0 = -100000, 400000            #Northing & easting of true origin (m)
-
-
 a = 6377563.396
 b = 6356256.909
 a_2 = 6378137.000
