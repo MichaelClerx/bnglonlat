@@ -3,17 +3,12 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - '**'
 
 jobs:
 
   build-and-test:
     name: style
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - uses: actions/checkout@v1
