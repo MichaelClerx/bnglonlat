@@ -1,6 +1,6 @@
 # British National Grid to Longitude/Lattitude
 
-Pure python implementation of `convert_longlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
+Pure python implementation of `convert_lonlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
 
 
 ## License
