@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Tests for bnglonglat
+# Tests for bnglonlat
 #
 import unittest
 import timeit
@@ -8,11 +8,11 @@ import timeit
 import convertbng.util
 import numpy as np
 
-import bnglonglat
+import bnglonlat
 
 
-class TestBngLonglat(unittest.TestCase):
-    """ Tests for bng longlat. """
+class TestBngLonlat(unittest.TestCase):
+    """ Tests for ``bnglonlat``. """
 
     def test_random(self):
         # Compares random points against convertbng
@@ -22,7 +22,7 @@ class TestBngLonglat(unittest.TestCase):
         ys = np.random.randint(0, 1300000, size=n)
 
         t0 = timeit.default_timer()
-        aa, bb = bnglonglat.bnglonglat(xs, ys)
+        aa, bb = bnglonlat.bnglonlat(xs, ys)
         t1 = timeit.default_timer() - t0
 
         t0 = timeit.default_timer()

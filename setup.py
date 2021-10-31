@@ -1,5 +1,5 @@
 #
-# SetupTools script for bnglonglat
+# SetupTools script for bnglonlat
 #
 from setuptools import setup, find_packages
 
@@ -11,7 +11,7 @@ with open('README.md') as f:
 
 # Go!
 setup(
-    name='bnglonglat',
+    name='bnglonlat',
 
     version='0.0.1',
 
@@ -24,7 +24,7 @@ setup(
     author='Michael Clerx',
     author_email='mail@michaelclerx.com',
 
-    packages=find_packages(include=('bnglonglat', 'bnglonglat.*')),
+    packages=find_packages(include=('bnglonlat', 'bnglonlat.*')),
 
     # List of dependencies
     install_requires=[

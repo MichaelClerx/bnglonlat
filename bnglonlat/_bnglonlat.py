@@ -45,7 +45,7 @@ n2 = n**2
 n3 = n**3
 
 
-def bnglonglat(easting, northing, tol1=1e-5, tol2=1e-16):
+def bnglonlat(easting, northing, tol1=1e-5, tol2=1e-16):
     """
     Converts a BNG easting and northin (in meters) to longitude and lattitude.
     """
