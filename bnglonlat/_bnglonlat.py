@@ -44,6 +44,10 @@ n = (a - b) / (a + b)
 n2 = n**2
 n3 = n**3
 
+MAX_EASTING = 700000
+MAX_NORTHING = 1250000
+
+
 
 def bnglonlat(easting, northing, tol1=1e-5, tol2=1e-16):
     """
@@ -192,3 +196,164 @@ def bnglonlat(easting, northing, tol1=1e-5, tol2=1e-16):
     lon /= pio
     return lon, lat
 
+
+175396
+
+'''
+get_ostn_ref(x, y):
+    """ Try to get OSTN15 shift parameters, and calculate offsets. """
+    key = x + (y * 701) + 1
+
+    result = ostn15_lookup(&key)
+    Ok((result.0, result.1, result.2))
+}
+
+
+def ostn15_shifts(x, y):
+    """ Calculate OSTN15 shifts for a given coordinate. """
+    # let e_index = (x / 1000.) as i32;
+    e_index = x // 1000
+    # let n_index = (y / 1000.) as i32;
+    n_index = y // 1000
+
+    # let x0 = e_index as i32 * 1000;
+    x0 = e_index * 1000
+    # let y0 = n_index as i32 * 1000;
+    y0 = n_index * 1000
+
+    # let s0: (f64, f64, f64) = get_ostn_ref(e_index, n_index)?;
+    let s0: (f64, f64, f64) = get_ostn_ref(e_index, n_index)?;
+    # let s1: (f64, f64, f64) = get_ostn_ref(e_index + 1, n_index)?;
+    let s1: (f64, f64, f64) = get_ostn_ref(e_index + 1, n_index)?;
+    # let s2: (f64, f64, f64) = get_ostn_ref(e_index, n_index + 1)?;
+    let s2: (f64, f64, f64) = get_ostn_ref(e_index, n_index + 1)?;
+    # let s3: (f64, f64, f64) = get_ostn_ref(e_index + 1, n_index + 1)?;
+    let s3: (f64, f64, f64) = get_ostn_ref(e_index + 1, n_index + 1)?;
+
+    # let dx = x - f64::from(x0);
+    let dx = x - f64::from(x0);
+    # let dy = y - f64::from(y0);
+    let dy = y - f64::from(y0);
+
+    # let t = dx / 1000.;
+    let t = dx / 1000.;
+    # let u = dy / 1000.;
+    let u = dy / 1000.;
+
+    # let f0 = (1. - t) * (1. - u);
+    let f0 = (1. - t) * (1. - u);
+    # let f1 = t * (1. - u);
+    let f1 = t * (1. - u);
+    # let f2 = (1. - t) * u;
+    let f2 = (1. - t) * u;
+    # let f3 = t * u;
+    let f3 = t * u;
+
+    # let se = f0 * s0.0 + f1 * s1.0 + f2 * s2.0 + f3 * s3.0;
+    let se = f0 * s0.0 + f1 * s1.0 + f2 * s2.0 + f3 * s3.0;
+    # let sn = f0 * s0.1 + f1 * s1.1 + f2 * s2.1 + f3 * s3.1;
+    let sn = f0 * s0.1 + f1 * s1.1 + f2 * s2.1 + f3 * s3.1;
+    # let sg = f0 * s0.2 + f1 * s1.2 + f2 * s2.2 + f3 * s3.2;
+
+    return se, sn
+
+
+'''
+
+'''
+
+
+
+/// Convert OSGB36 coordinates to Lon, Lat using OSTN15 data
+#[allow(non_snake_case)]
+pub fn convert_osgb36_to_ll(E: f64, N: f64) -> Result<(f64, f64), ()> {
+    // Apply reverse OSTN15 adustments
+    let epsilon = 0.009;
+    let (mut dx, mut dy, _) = ostn15_shifts(E, N)?;
+    let (mut x, mut y) = (E - dx, N - dy);
+    let (mut last_dx, mut last_dy) = (dx, dy);
+    let mut res;
+    loop {
+        res = ostn15_shifts(x, y)?;
+        dx = res.0;
+        dy = res.1;
+        x = E - dx;
+        y = N - dy;
+        // If the difference […] is more than 0.00010m (User Guide, p15)
+        // TODO: invert this logic
+        if (dx - last_dx).abs() < epsilon && (dy - last_dy).abs() < epsilon {
+            break;
+        }
+        last_dx = dx;
+        last_dy = dy;
+    }
+    let x = (E - dx).round_to_mm();
+    let y = (N - dy).round_to_mm();
+    // We've converted to ETRS89, so we need to use the WGS84/ GRS80 ellipsoid constants
+    convert_to_ll(x, y, GRS80_SEMI_MAJOR, GRS80_SEMI_MINOR)
+}
+
+
+// Easting and Northing to Lon, Lat conversion using a Helmert transform
+// Note that either GRS80 or Airy 1830 ellipsoids can be passed
+#[allow(non_snake_case)]
+fn convert_to_ll(eastings: f64, northings: f64, ell_a: f64, ell_b: f64) -> Result<(f64, f64), ()> {
+    // ensure that we're within the boundaries
+    check(eastings, (0.000, MAX_EASTING))?;
+    check(northings, (0.000, MAX_NORTHING))?;
+    // ellipsoid squared eccentricity constant
+    let a = ell_a;
+    let b = ell_b;
+    let e2 = (a.powi(2) - b.powi(2)) / a.powi(2);
+    let n = (a - b) / (a + b);
+
+    let dN = northings - N0;
+    let mut phi = PHI0 + dN / (a * F0);
+    let mut m = compute_m(phi, b, n);
+    while (dN - m) >= 0.00001 {
+        m = compute_m(phi, b, n);
+        phi += (dN - m) / (a * F0);
+    }
+    let sp2 = phi.sin().powi(2);
+    let nu = a * F0 * (1. - e2 * sp2).powf(-0.5);
+    let rho = a * F0 * (1. - e2) * (1. - e2 * sp2).powf(-1.5);
+    let eta2 = nu / rho - 1.;
+
+    let tp = phi.tan();
+    let tp2 = tp.powi(2);
+    let tp4 = tp.powi(4);
+
+    let VII = tp / (2. * rho * nu);
+    let VIII = tp / (24. * rho * nu.powi(3)) * (5. + 3. * tp2 + eta2 - 9. * tp2 * eta2);
+    let IX = tp / (720. * rho * nu.powi(5)) * (61. + 90. * tp2 + 45. * tp4);
+
+    let sp = 1.0 / phi.cos();
+    let tp6 = tp4 * tp2;
+
+    let X = sp / nu;
+    let XI = sp / (6. * nu.powi(3)) * (nu / rho + 2. * tp2);
+    let XII = sp / (120. * nu.powi(5)) * (5. + 28. * tp2 + 24. * tp4);
+    let XIIA = sp / (5040. * nu.powi(7)) * (61. + 662. * tp2 + 1320. * tp4 + 720. * tp6);
+
+    let e = eastings - E0;
+
+    phi = phi - VII * e.powi(2) + VIII * e.powi(4) - IX * e.powi(6);
+    let mut lambda = LAM0 + X * e - XI * e.powi(3) + XII * e.powi(5) - XIIA * e.powi(7);
+
+    phi = phi.to_degrees();
+    lambda = lambda.to_degrees();
+    return lambda, phi
+
+
+// Intermediate calculation used for lon, lat to ETRS89 and reverse conversion
+fn compute_m(phi: f64, b: f64, n: f64) -> f64 {
+    let p_plus = phi + PHI0;
+    let p_minus = phi - PHI0;
+
+    b * F0
+        * ((1. + n * (1. + 5. / 4. * n * (1. + n))) * p_minus
+            - 3. * n * (1. + n * (1. + 7. / 8. * n)) * p_minus.sin() * p_plus.cos()
+            + (15. / 8. * n * (n * (1. + n))) * (2. * p_minus).sin() * (2. * p_plus).cos()
+            - 35. / 24. * n.powi(3) * (3. * p_minus).sin() * (3. * p_plus).cos())
+}
+'''
