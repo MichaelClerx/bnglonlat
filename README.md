@@ -5,7 +5,7 @@
 
 Pure python implementation of `convert_lonlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
 
-Note: At the moment this uses the less accurate version, without OSTN15 corrections.
+Note: This uses the version without OSTN15 corrections, which can be several meters off.
 
 ## License
 
