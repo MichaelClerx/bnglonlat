@@ -27,5 +27,5 @@ jobs:
 
       - name: Run unit tests
         run: |
-          python bnglonglat/tests/test_bnglonglat.py
+          python bnglonlat/tests/test_bnglonlat.py
 
