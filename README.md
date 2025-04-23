@@ -6,7 +6,7 @@
 Pure Python port of **the deprecated function** `convert_lonlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
 
 **This software was only created to work around an issue with installing the much better library [convertbng](https://github.com/urschrei/convertbng).**
-**It ports a now deprecated and inaccurate algorithm, which is easier to implement than a full conversion.**
+**It ports a now deprecated and inaccurate algorithm, which was easier to implement than a full conversion.**
 **Please try installing `convertbng` instead**.
 
 ## Installation
