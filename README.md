@@ -1,11 +1,28 @@
-[![Ubuntu unit tests](https://github.com/MichaelClerx/bnglonglat/workflows/Ubuntu%20unit%20tests/badge.svg)](https://github.com/MichaelClerx/bnglonglat/actions?query=workflow%3A"Ubuntu+unit+tests")
-[![Style](https://github.com/MichaelClerx/bnglonglat/workflows/Style/badge.svg)](https://github.com/MichaelClerx/bnglonglat/actions?query=workflow%3A"Style")
+[![Ubuntu unit tests](https://github.com/MichaelClerx/bnglonlat/workflows/Ubuntu%20unit%20tests/badge.svg)](https://github.com/MichaelClerx/bnglonlat/actions?query=workflow%3A"Ubuntu+unit+tests")
+[![Style](https://github.com/MichaelClerx/bnglonlat/workflows/Style/badge.svg)](https://github.com/MichaelClerx/bnglonlat/actions?query=workflow%3A"Style")
 
 # British National Grid to Longitude/Lattitude
 
-Pure python implementation of `convert_lonlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
+Pure Python port of **the deprecated function** `convert_lonlat` from [lonlat_bng](https://github.com/urschrei/lonlat_bng).
 
-Note: This uses the version without OSTN15 corrections, which can be several meters off.
+**This software was only created to work around an issue with installing the much better library [convertbng](https://github.com/urschrei/convertbng).**
+**It ports a now deprecated and inaccurate algorithm, which is easier to implement than a full conversion.**
+**Please try installing `convertbng` instead**.
+
+## Installation
+
+First, try using `convertbng`:
+
+```
+pip install convertbng
+```
+
+If you are one of a small number of users for whom this doesn't work, and if you don't care about accuracy, you can try using this replacement:
+
+```
+pip install bnglonlat
+```
+
 
 ## OSN guide
 
