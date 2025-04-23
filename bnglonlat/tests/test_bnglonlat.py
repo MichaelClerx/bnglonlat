@@ -29,7 +29,7 @@ class TestBngLonlat(unittest.TestCase):
         cc, dd = convertbng.util.convert_lonlat(xs, ys)
         t2 = timeit.default_timer() - t0
 
-        print(f'Convertbng advantage: {round((t1 - t2) / t2 * 100)}%')
+        print(f'Convertbng performance gain: {round((t1 - t2) / t2 * 100)}%')
 
         e1 = np.abs(aa - cc)
         e2 = np.abs(bb - dd)
